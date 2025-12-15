@@ -1,6 +1,6 @@
-# Nextjs Boilerplate and Starter-Kit. Minimal yet scalable setup for Next.js projects
+# Next.js Boilerplate and Starter-Kit. Minimal yet scalable setup for Next.js projects
 
-A Next.js boilerplate that helps you get jump right into building your app without having to set up everything from scratch every time you start a new project. It comes with a minimal yet scalable setup that includes Next.js, Typescript, TailwindCSS, ESLint, Prettier, Husky, Lint-staged, Commitlint, and SEO-friendly features.
+A Next.js 16 boilerplate that helps you jump right into building your app without having to set up everything from scratch every time you start a new project. It comes with a minimal yet scalable setup that includes Next.js 16 with Turbopack, React 19, TypeScript, TailwindCSS, ESLint 9, Prettier, Husky, Lint-staged, Commitlint, and SEO-friendly features.
 
 ## Live Demo
 
@@ -10,10 +10,10 @@ Check out the live demo of this boilerplate in action:
 
 ## Features
 
-- [x] [Next.js](https://nextjs.org): Full-fledged framework for React apps
+- [x] [Next.js 16](https://nextjs.org): Full-fledged framework for React apps with Turbopack
 - [x] [Typescript](https://typescriptlang.org): Type checking and better code quality
 - [x] [TailwindCSS](https://tailwindcss.com/): Utility-first CSS framework
-- [x] [ESLint](https://eslint.org): Pluggable linting utility for JavaScript
+- [x] [ESLint 9](https://eslint.org): Modern pluggable linting utility for JavaScript
 - [x] [Prettier](https://prettier.io): Opinionated code formatter
 - [x] [Husky](https://typicode.github.io/husky): Git hooks made easy
 - [x] [Lint-staged](https://github.com/lint-staged/lint-staged): Run linters on git staged files
@@ -108,9 +108,9 @@ AUTH_GITHUB_SECRET=yourGithubClientSecret
 
 ## Eslint configuration
 
-- The project uses common Eslint configuration for Typescript projects. The configuration is based on the following packages:
-  - [eslint-config-airbnb-typescript](https://www.npmjs.com/package/eslint-config-airbnb-typescript): Airbnb's ESLint config with TypeScript support.
-  - [typescript-eslint](https://typescript-eslint.io/): Enables Eslint to lint TypeScript code.
+- The project uses modern ESLint 9 configuration compatible with Next.js 16. The configuration is based on the following packages:
+  - [eslint-config-next](https://www.npmjs.com/package/eslint-config-next): Next.js ESLint configuration.
+  - [typescript-eslint v8](https://typescript-eslint.io/): Enables ESLint to lint TypeScript code.
 
 ## Contributing
 
