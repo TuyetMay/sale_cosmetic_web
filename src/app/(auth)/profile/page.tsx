@@ -1,4 +1,3 @@
-import SignOutForm from '@/components/SignOutForm';
 import { auth } from '@/libs/auth';
 import Image from 'next/image';
 
@@ -22,7 +21,6 @@ export default async function ProfilePage() {
         <p>Name: {name}</p>
         <p>Email: {email}</p>
         <Image src={image!} alt={name!} width={280} height={280} />
-        <SignOutForm />
       </div>
     </div>
   );
