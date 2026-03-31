@@ -79,7 +79,7 @@ export default function RegisterPage() {
     const e: FormErrors = { lastName: '', firstName: '', email: '', phone: '', password: '', confirmPassword: '' };
     if (!form.lastName.trim()) e.lastName = 'Vui lòng nhập họ';
     if (!form.firstName.trim()) e.firstName = 'Vui lòng nhập tên';
-    if (!form.email) e.email = 'Vui lòng nhập email';
+    if (!form.email) e.email = 'Vui lòng nhập tên đăng nhập';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Email không đúng định dạng';
     if (form.phone && !/^(0[3-9])[0-9]{8}$/.test(form.phone.replace(/\s/g, '')))
       e.phone = 'Số điện thoại không hợp lệ (VD: 0912345678)';
@@ -226,7 +226,7 @@ export default function RegisterPage() {
 
             {/* Email */}
             <div className="mb-4">
-              <label className="block text-[12.5px] font-medium text-[#4a6580] mb-1.5">Địa chỉ Email</label>
+              <label className="block text-[12.5px] font-medium text-[#4a6580] mb-1.5">Tên đăng nhập</label>
               <input type="email" value={form.email} onChange={set('email')}
                 placeholder="example@email.com" className={inputCls('email')} />
               {errors.email && <p className="text-xs text-[#d85a30] mt-1">{errors.email}</p>}
@@ -235,7 +235,7 @@ export default function RegisterPage() {
             {/* Phone */}
             <div className="mb-4">
               <label className="block text-[12.5px] font-medium text-[#4a6580] mb-1.5">
-                Số điện thoại <span className="text-[#a0bcd5] font-normal">(tuỳ chọn)</span>
+                Số điện thoại <span className="text-[#a0bcd5] font-normal"></span>
               </label>
               <input type="tel" value={form.phone} onChange={set('phone')}
                 placeholder="0912 345 678" className={inputCls('phone')} />

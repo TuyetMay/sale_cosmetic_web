@@ -145,7 +145,7 @@ export default function SignInPage() {
           <form onSubmit={handleSubmit}>
             {/* Email */}
             <div className="mb-4">
-              <label className="block text-[12.5px] font-medium text-[#4a6580] mb-1.5">Địa chỉ Email</label>
+              <label className="block text-[12.5px] font-medium text-[#4a6580] mb-1.5">Tên đăng nhập</label>
               <input type="email" value={email} placeholder="example@email.com"
                 onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: '' })); }}
                 className={inputCls(!!errors.email)} />

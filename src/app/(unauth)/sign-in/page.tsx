@@ -129,7 +129,7 @@ export default function LoginPage() {
             {/* Email */}
             <div className="mb-5">
               <label className="block text-sm font-semibold text-[#4a6580] mb-2">
-                Địa chỉ Email
+                Tên đăng nhập
               </label>
               <input
                 type="email"
