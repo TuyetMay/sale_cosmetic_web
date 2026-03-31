@@ -1,190 +1,255 @@
 'use client';
 
 import { useState } from 'react';
-import { MOCK_PRODUCTS } from '@/data/mockProducts';
-import type { Product } from '@/data/mockProducts';
+
+/* ─── 1. TYPES & MOCK DATA (Từ SQL INSERT) ───────────────────────────────── */
+type Product = {
+  MaSP: string;
+  TenSP: string;
+  MoTaSP: string;
+  GiaBanHienTai: number;
+  SoLuongConLai: number;
+  MaNV: string;
+};
+
+// 10 Sản phẩm được lấy chính xác từ câu lệnh SQL của bạn
+const MOCK_PRODUCTS: Product[] = [
+  { MaSP: 'SP01', TenSP: 'Sua rua mat Cetaphil 125ml', MoTaSP: 'Lam sach da nhay cam', GiaBanHienTai: 185000, SoLuongConLai: 6, MaNV: 'NV03' },
+  { MaSP: 'SP02', TenSP: 'Sua rua mat Senka Perfect Whip', MoTaSP: 'Lam sach sau', GiaBanHienTai: 95000, SoLuongConLai: 107, MaNV: 'NV03' },
+  { MaSP: 'SP03', TenSP: 'Nuoc tay trang Bioderma 500ml', MoTaSP: 'Danh cho da nhay cam', GiaBanHienTai: 420000, SoLuongConLai: 69, MaNV: 'NV03' },
+  { MaSP: 'SP04', TenSP: 'Nuoc tay trang Garnier 400ml', MoTaSP: 'Lam sach trang diem', GiaBanHienTai: 165000, SoLuongConLai: 84, MaNV: 'NV03' },
+  { MaSP: 'SP05', TenSP: 'Kem duong am Nivea Soft', MoTaSP: 'Duong am da mat', GiaBanHienTai: 89000, SoLuongConLai: 135, MaNV: 'NV03' },
+  { MaSP: 'SP06', TenSP: 'Kem duong da Laneige Water Bank', MoTaSP: 'Cap am sau', GiaBanHienTai: 750000, SoLuongConLai: 44, MaNV: 'NV03' },
+  { MaSP: 'SP07', TenSP: 'Serum Vitamin C The Ordinary', MoTaSP: 'Sang da', GiaBanHienTai: 320000, SoLuongConLai: 63, MaNV: 'NV03' },
+  { MaSP: 'SP08', TenSP: 'Serum Niacinamide 10% The Ordinary', MoTaSP: 'Kiem dau', GiaBanHienTai: 310000, SoLuongConLai: 57, MaNV: 'NV03' },
+  { MaSP: 'SP09', TenSP: 'Kem chong nang Anessa SPF50+', MoTaSP: 'Bao ve da', GiaBanHienTai: 520000, SoLuongConLai: 8, MaNV: 'NV03' },
+  { MaSP: 'SP10', TenSP: 'Kem chong nang Sunplay SPF50+', MoTaSP: 'Chong nang hang ngay', GiaBanHienTai: 135000, SoLuongConLai: 99, MaNV: 'NV03' },
+];
 
 const fmt = (n: number) => n.toLocaleString('vi-VN') + '₫';
 
+/* ─── 2. MAIN COMPONENT ─────────────────────────────────────────────────── */
 export default function AdminProductsPage() {
+  const [view, setView] = useState<'list' | 'form'>('list');
+  const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // States cho Form Thêm/Sửa
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formData, setFormData] = useState<Product>({
+    MaSP: '', TenSP: '', MoTaSP: '', GiaBanHienTai: 0, SoLuongConLai: 0, MaNV: 'NV03'
+  });
 
-  const handleDelete = (id: string) => {
-    if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
-      setProducts(products.filter(p => p.MaSP !== id));
-    }
+  /* ─── HANDLERS ─── */
+  const handleAddNew = () => {
+    setEditingId(null);
+    setFormData({ MaSP: '', TenSP: '', MoTaSP: '', GiaBanHienTai: 0, SoLuongConLai: 0, MaNV: 'NV03' });
+    setView('form');
   };
 
   const handleEdit = (product: Product) => {
-    setEditingProduct(product);
-    setIsModalOpen(true);
+    setEditingId(product.MaSP);
+    setFormData(product);
+    setView('form');
   };
 
-  const handleAddNew = () => {
-    setEditingProduct(null);
-    setIsModalOpen(true);
+  const handleDelete = (MaSP: string) => {
+    if (confirm(`Bạn có chắc chắn muốn xóa sản phẩm ${MaSP}?`)) {
+      setProducts(products.filter(p => p.MaSP !== MaSP));
+    }
   };
+
+  const handleSave = () => {
+    if (!formData.MaSP || !formData.TenSP) {
+      alert('Vui lòng nhập Mã và Tên sản phẩm!');
+      return;
+    }
+
+    if (editingId) {
+      // Cập nhật
+      setProducts(products.map(p => p.MaSP === editingId ? formData : p));
+    } else {
+      // Thêm mới
+      if (products.some(p => p.MaSP === formData.MaSP)) {
+        alert('Mã sản phẩm đã tồn tại!');
+        return;
+      }
+      setProducts([formData, ...products]); // Đưa SP mới lên đầu
+    }
+    setView('list');
+    alert('Đã lưu thay đổi thành công!');
+  };
+
+  const filteredProducts = products.filter(p => 
+    p.TenSP.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    p.MaSP.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
 
   return (
-    <div className="space-y-10 min-h-screen">
-      <div className="flex items-center justify-between bg-white px-8 py-6 rounded-[32px] border border-[#e8f0fc] shadow-sm">
-        <div>
-          <h1 className="text-[28px] font-black text-[#0d1f3c]" style={{ fontFamily: 'Georgia, serif' }}>Quản lý sản phẩm</h1>
-          <p className="text-[14px] text-[#7a9ab5] font-medium">Bạn có thể thêm, sửa, xóa và theo dõi tồn kho tại đây.</p>
-        </div>
-        <button 
-          onClick={handleAddNew}
-          className="bg-[#82CAFA] text-white px-8 py-4 rounded-2xl font-bold text-[15px] hover:bg-[#6abdf8] transition-all shadow-xl shadow-[#82CAFA]/30 flex items-center gap-3 active:scale-95"
-        >
-          <span className="text-xl">+</span>
-          Thêm sản phẩm mới
-        </button>
-      </div>
+    <div className="min-h-screen flex bg-[#f5f8ff] font-[DM_Sans,sans-serif]">
 
-      <div className="bg-white rounded-[40px] border border-[#e8f0fc] shadow-sm overflow-hidden p-8">
-        <div className="flex items-center gap-6 mb-10">
-          <div className="flex-1 relative">
-            <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a9ab5]" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-            <input 
-              placeholder="Tìm kiếm theo tên sản phẩm hoặc mã SP..." 
-              className="w-full bg-[#f9fcff] border border-[#e8f2ff] rounded-2xl px-12 py-3.5 outline-none focus:border-[#82CAFA] focus:bg-white transition-all text-[14px]"
-            />
-          </div>
-          <select className="bg-[#f9fcff] border border-[#e8f2ff] rounded-2xl px-6 py-3.5 outline-none focus:border-[#82CAFA] font-bold text-[13px] text-[#4a6580]">
-            <option>Tất cả danh mục</option>
-            <option>Chăm sóc da</option>
-            <option>Trang điểm</option>
-          </select>
-        </div>
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col min-w-0">
+        
+       
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b border-[#f5f8ff] text-[12px] text-[#9eb3c8] font-extrabold uppercase tracking-widest bg-[#fcfdff]">
-                <th className="py-5 pl-6">Sản phẩm</th>
-                <th className="py-5">Mã SP</th>
-                <th className="py-5">Giá bán</th>
-                <th className="py-5">Tồn kho</th>
-                <th className="py-5">Trạng thái</th>
-                <th className="py-5 pr-6 text-right">Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((p) => (
-                <tr key={p.MaSP} className="border-b border-[#fcfdff] hover:bg-[#f8faff] transition-colors rounded-2xl">
-                  <td className="py-6 pl-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-2xl bg-[#f0f7ff] flex items-center justify-center text-3xl shadow-sm border border-transparent">
-                        🧴
-                      </div>
-                      <div>
-                        <p className="text-[14px] font-black text-[#0d1f3c] line-clamp-1">{p.TenSP}</p>
-                        <p className="text-[11px] text-[#9eb3c8] font-bold uppercase tracking-wider">Thương hiệu: Luxé</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-6 text-[13px] font-bold text-[#4a6580]">{p.MaSP}</td>
-                  <td className="py-6 text-[15px] font-extrabold text-[#e8363a]">{fmt(p.GiaBanHienTai)}</td>
-                  <td className="py-6">
-                    <div className="flex items-center gap-3">
-                      <span className={`w-2.5 h-2.5 rounded-full ${p.SoLuongConLai > 10 ? 'bg-[#10b981]' : 'bg-[#e8363a]'}`} />
-                      <span className="text-[14px] font-bold text-[#4a6580]">{p.SoLuongConLai} đơn vị</span>
-                    </div>
-                  </td>
-                  <td className="py-6">
-                    <span className="px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#ecfdf5] text-[#10b981]">Đang bán</span>
-                  </td>
-                  <td className="py-6 pr-6 text-right">
-                    <div className="flex items-center justify-end gap-3">
-                      <button 
-                        onClick={() => handleEdit(p)}
-                        className="w-10 h-10 rounded-xl bg-[#f0f7ff] text-[#82CAFA] flex items-center justify-center hover:bg-[#82CAFA] hover:text-white transition-all shadow-sm active:scale-90"
-                      >
-                         ✎
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(p.MaSP)}
-                        className="w-10 h-10 rounded-xl bg-[#fff5f5] text-[#e8363a] flex items-center justify-center hover:bg-[#e8363a] hover:text-white transition-all shadow-sm active:scale-90"
-                      >
-                         🗑
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        {/* Workspace */}
+        <div className="flex-1 p-8 overflow-y-auto">
+          
+          {view === 'list' ? (
+            /* ─── DANH SÁCH SẢN PHẨM ─── */
+            <div className="animate-fade-in-up">
+              
+              <div className="flex justify-between items-center mb-6">
+                <div className="relative">
+                  <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a9ab5]" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                  <input 
+                    type="text" 
+                    placeholder="Tìm kiếm sản phẩm..." 
+                    value={searchQuery} 
+                    onChange={(e) => setSearchQuery(e.target.value)} 
+                    className="w-80 pl-11 pr-4 py-2.5 bg-white border border-[#d6eaff] rounded-xl text-sm outline-none focus:border-[#82CAFA] transition-colors shadow-sm" 
+                  />
+                </div>
+                <button 
+                  onClick={handleAddNew} 
+                  className="bg-[#82CAFA] hover:bg-[#5db8f5] text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md shadow-[#82CAFA]/20 flex items-center gap-2"
+                >
+                  <span className="text-lg leading-none">+</span> Thêm Sản Phẩm
+                </button>
+              </div>
 
-      {/* Mock Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-[#0d1f3c]/60 backdrop-blur-sm flex items-center justify-center z-[100] p-6">
-          <div className="bg-white w-full max-w-2xl rounded-[40px] shadow-2xl p-12 overflow-hidden relative animate-in fade-in slide-in-from-bottom-8 duration-300">
-            <h2 className="text-3xl font-black text-[#0d1f3c] mb-2" style={{ fontFamily: 'Georgia, serif' }}>
-              {editingProduct ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}
-            </h2>
-            <p className="text-[14px] text-[#7a9ab5] mb-10 font-medium leading-relaxed">Vui lòng nhập đầy đủ thông tin để lưu thay đổi vào hệ thống.</p>
-            
-            <div className="grid grid-cols-2 gap-8 mb-10">
-              <div className="space-y-2">
-                <label className="text-[12px] font-black text-[#4a6580] uppercase tracking-widest ml-1">Tên sản phẩm</label>
-                <input 
-                  defaultValue={editingProduct?.TenSP}
-                  placeholder="Ví dụ: Serum dưỡng sáng da" 
-                  className="w-full bg-[#f9fcff] border border-[#e8f2ff] rounded-2xl px-5 py-4 outline-none focus:border-[#82CAFA] focus:bg-white transition-all text-[15px]" 
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[12px] font-black text-[#4a6580] uppercase tracking-widest ml-1">Mã sản phẩm</label>
-                <input 
-                  defaultValue={editingProduct?.MaSP}
-                  disabled={!!editingProduct}
-                  placeholder="Mã tự động phát sinh" 
-                  className="w-full bg-[#f9fcff] border border-[#e8f2ff] rounded-2xl px-5 py-4 outline-none focus:border-[#82CAFA] focus:bg-white transition-all text-[15px] disabled:opacity-50" 
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[12px] font-black text-[#4a6580] uppercase tracking-widest ml-1">Giá bán hiện tại</label>
-                <input 
-                  type="number"
-                  defaultValue={editingProduct?.GiaBanHienTai}
-                  placeholder="0đ" 
-                  className="w-full bg-[#f9fcff] border border-[#e8f2ff] rounded-2xl px-5 py-4 outline-none focus:border-[#82CAFA] focus:bg-white transition-all text-[15px] font-extrabold text-[#e8363a]" 
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[12px] font-black text-[#4a6580] uppercase tracking-widest ml-1">Số lượng tồn kho</label>
-                <input 
-                  type="number"
-                  defaultValue={editingProduct?.SoLuongConLai}
-                  placeholder="0" 
-                  className="w-full bg-[#f9fcff] border border-[#e8f2ff] rounded-2xl px-5 py-4 outline-none focus:border-[#82CAFA] focus:bg-white transition-all text-[15px]" 
-                />
+              <div className="bg-white rounded-2xl border border-[#e8f0fc] overflow-hidden shadow-sm">
+                <table className="w-full text-left">
+                  <thead className="bg-[#f0f7ff] text-[#4a6580] text-[13px] uppercase tracking-wider">
+                    <tr>
+                      <th className="px-6 py-4 font-semibold w-24">Mã SP</th>
+                      <th className="px-6 py-4 font-semibold min-w-[200px]">Tên sản phẩm</th>
+                      <th className="px-6 py-4 font-semibold min-w-[150px]">Mô tả</th>
+                      <th className="px-6 py-4 font-semibold">Giá bán</th>
+                      <th className="px-6 py-4 font-semibold">Tồn kho</th>
+                      <th className="px-6 py-4 font-semibold text-right">Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#e8f0fc] text-sm text-[#0d1f3c]">
+                    {filteredProducts.length > 0 ? (
+                      filteredProducts.map(p => (
+                        <tr key={p.MaSP} className="hover:bg-[#f9fcff] transition-colors">
+                          <td className="px-6 py-4 font-bold text-[#82CAFA]">{p.MaSP}</td>
+                          <td className="px-6 py-4 font-bold">{p.TenSP}</td>
+                          <td className="px-6 py-4 text-[#7a9ab5] truncate max-w-[200px]" title={p.MoTaSP}>{p.MoTaSP}</td>
+                          <td className="px-6 py-4 text-[#e8363a] font-bold">{fmt(p.GiaBanHienTai)}</td>
+                          <td className="px-6 py-4">
+                            <span className={`px-2.5 py-1 rounded-md font-bold text-xs ${p.SoLuongConLai > 10 ? 'bg-[#ecfdf5] text-[#10b981]' : 'bg-[#fff5f5] text-[#e8363a]'}`}>
+                              {p.SoLuongConLai}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-right space-x-3">
+                            <button onClick={() => handleEdit(p)} className="text-[#4a6580] hover:text-[#82CAFA] font-medium bg-[#f0f7ff] px-3 py-1.5 rounded-lg transition-colors">Sửa</button>
+                            <button onClick={() => handleDelete(p.MaSP)} className="text-[#e8363a] hover:text-white font-medium bg-[#fff5f5] hover:bg-[#e8363a] px-3 py-1.5 rounded-lg transition-colors">Xóa</button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={6} className="px-6 py-10 text-center text-[#7a9ab5]">Không tìm thấy sản phẩm nào!</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
+          ) : (
+            /* ─── FORM THÊM / SỬA ─── */
+            <div className="bg-white rounded-2xl border border-[#e8f0fc] p-8 shadow-sm max-w-3xl animate-fade-in-up mx-auto mt-4">
+              <div className="flex justify-between items-center border-b border-[#e8f0fc] pb-4 mb-6">
+                <h2 className="text-xl font-bold text-[#0d1f3c]">
+                  {editingId ? 'Cập nhật Sản phẩm' : 'Thêm Sản phẩm mới'}
+                </h2>
+                <button onClick={() => setView('list')} className="text-[#7a9ab5] hover:text-[#0d1f3c] font-medium text-sm">
+                  ← Quay lại
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-6 mb-8">
+                <div className="col-span-2">
+                  <label className="block text-sm font-bold text-[#4a6580] mb-2">Tên Sản Phẩm</label>
+                  <input 
+                    value={formData.TenSP} 
+                    onChange={(e) => setFormData({...formData, TenSP: e.target.value})}
+                    className="w-full px-4 py-3 bg-[#f5f9ff] border border-[#d6eaff] rounded-xl text-sm outline-none focus:border-[#82CAFA] text-[#0d1f3c]" 
+                  />
+                </div>
 
-            <div className="flex gap-4">
-              <button 
-                onClick={() => setIsModalOpen(false)}
-                className="flex-1 bg-[#f5f8ff] text-[#4a6580] py-5 rounded-2xl font-bold text-[15px] hover:bg-[#e8f0fc] transition-all active:scale-95"
-              >
-                Hủy bỏ
-              </button>
-              <button 
-                onClick={() => { setIsModalOpen(false); alert('Đã lưu thay đổi thành công!'); }}
-                className="flex-1 bg-[#82CAFA] text-white py-5 rounded-2xl font-bold text-[15px] hover:bg-[#6abdf8] transition-all shadow-xl shadow-[#82CAFA]/20 active:scale-95"
-              >
-                Lưu thay đổi
-              </button>
+                <div>
+                  <label className="block text-sm font-bold text-[#4a6580] mb-2">Mã Sản Phẩm</label>
+                  <input 
+                    value={formData.MaSP} 
+                    disabled={!!editingId}
+                    onChange={(e) => setFormData({...formData, MaSP: e.target.value})}
+                    className="w-full px-4 py-3 bg-[#f5f9ff] border border-[#d6eaff] rounded-xl text-sm outline-none focus:border-[#82CAFA] text-[#0d1f3c] disabled:opacity-60" 
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-[#4a6580] mb-2">Mã Nhân Viên</label>
+                  <input 
+                    value={formData.MaNV} 
+                    onChange={(e) => setFormData({...formData, MaNV: e.target.value})}
+                    className="w-full px-4 py-3 bg-[#f5f9ff] border border-[#d6eaff] rounded-xl text-sm outline-none focus:border-[#82CAFA] text-[#0d1f3c]" 
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-[#4a6580] mb-2">Giá Bán Hiện Tại (VNĐ)</label>
+                  <input 
+                    type="number" 
+                    value={formData.GiaBanHienTai} 
+                    onChange={(e) => setFormData({...formData, GiaBanHienTai: Number(e.target.value)})}
+                    className="w-full px-4 py-3 bg-[#f5f9ff] border border-[#d6eaff] rounded-xl text-sm outline-none focus:border-[#82CAFA] font-bold text-[#e8363a]" 
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-[#4a6580] mb-2">Số lượng tồn kho</label>
+                  <input 
+                    type="number" 
+                    value={formData.SoLuongConLai} 
+                    onChange={(e) => setFormData({...formData, SoLuongConLai: Number(e.target.value)})}
+                    className="w-full px-4 py-3 bg-[#f5f9ff] border border-[#d6eaff] rounded-xl text-sm outline-none focus:border-[#82CAFA] text-[#0d1f3c]" 
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-bold text-[#4a6580] mb-2">Mô tả sản phẩm</label>
+                  <textarea 
+                    value={formData.MoTaSP} 
+                    onChange={(e) => setFormData({...formData, MoTaSP: e.target.value})}
+                    className="w-full px-4 py-3 bg-[#f5f9ff] border border-[#d6eaff] rounded-xl text-sm outline-none focus:border-[#82CAFA] text-[#0d1f3c] h-24 resize-y" 
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-4 border-t border-[#e8f0fc]">
+                <button 
+                  onClick={handleSave} 
+                  className="bg-[#0d1f3c] text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-[#1a2f50] transition-colors"
+                >
+                  Lưu thông tin
+                </button>
+                <button 
+                  onClick={() => setView('list')} 
+                  className="bg-[#f0f7ff] text-[#4a6580] px-8 py-3 rounded-xl font-bold hover:bg-[#e8f0fc] transition-colors"
+                >
+                  Hủy bỏ
+                </button>
+              </div>
             </div>
-          </div>
+          )}
+
         </div>
-      )}
+      </main>
     </div>
   );
 }

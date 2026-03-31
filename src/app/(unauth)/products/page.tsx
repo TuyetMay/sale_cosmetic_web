@@ -1,22 +1,34 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { MOCK_PRODUCTS } from '@/data/mockProducts'; 
-import type { Product } from '@/data/mockProducts'; 
 import { useCart } from '@/contexts/CartContext';
 
-const CATEGORIES = [
-  { id: 'c1', name: 'Chăm sóc da', icon: '🧴' },
-  { id: 'c2', name: 'Trang điểm', icon: '💄' },
-  { id: 'c3', name: 'Chăm sóc tóc', icon: '💇‍♀️' },
-  { id: 'c4', name: 'Nước hoa', icon: '🌸' },
-  { id: 'c5', name: 'Cơ thể', icon: '🛁' },
-  { id: 'c6', name: 'Thực phẩm', icon: '💊' },
+/* ─── 1. TYPES & MOCK DATA ───────────────────────────────── */
+type Product = {
+  MaSP: string;
+  TenSP: string;
+  MoTaSP: string;
+  GiaBanHienTai: number;
+  SoLuongConLai: number;
+  MaNV: string;
+};
+
+const MOCK_PRODUCTS: Product[] = [
+  { MaSP: 'SP01', TenSP: 'Sua rua mat Cetaphil 125ml', MoTaSP: 'Lam sach da nhay cam', GiaBanHienTai: 185000, SoLuongConLai: 6, MaNV: 'NV03' },
+  { MaSP: 'SP02', TenSP: 'Sua rua mat Senka Perfect Whip', MoTaSP: 'Lam sach sau', GiaBanHienTai: 95000, SoLuongConLai: 107, MaNV: 'NV03' },
+  { MaSP: 'SP03', TenSP: 'Nuoc tay trang Bioderma 500ml', MoTaSP: 'Danh cho da nhay cam', GiaBanHienTai: 420000, SoLuongConLai: 69, MaNV: 'NV03' },
+  { MaSP: 'SP04', TenSP: 'Nuoc tay trang Garnier 400ml', MoTaSP: 'Lam sach trang diem', GiaBanHienTai: 165000, SoLuongConLai: 84, MaNV: 'NV03' },
+  { MaSP: 'SP05', TenSP: 'Kem duong am Nivea Soft', MoTaSP: 'Duong am da mat', GiaBanHienTai: 89000, SoLuongConLai: 135, MaNV: 'NV03' },
+  { MaSP: 'SP06', TenSP: 'Kem duong da Laneige Water Bank', MoTaSP: 'Cap am sau', GiaBanHienTai: 750000, SoLuongConLai: 44, MaNV: 'NV03' },
+  { MaSP: 'SP07', TenSP: 'Serum Vitamin C The Ordinary', MoTaSP: 'Sang da', GiaBanHienTai: 320000, SoLuongConLai: 63, MaNV: 'NV03' },
+  { MaSP: 'SP08', TenSP: 'Serum Niacinamide 10% The Ordinary', MoTaSP: 'Kiem dau', GiaBanHienTai: 310000, SoLuongConLai: 57, MaNV: 'NV03' },
+  { MaSP: 'SP09', TenSP: 'Kem chong nang Anessa SPF50+', MoTaSP: 'Bao ve da', GiaBanHienTai: 520000, SoLuongConLai: 8, MaNV: 'NV03' },
+  { MaSP: 'SP10', TenSP: 'Kem chong nang Sunplay SPF50+', MoTaSP: 'Chong nang hang ngay', GiaBanHienTai: 135000, SoLuongConLai: 99, MaNV: 'NV03' },
 ];
 
 const fmt = (n: number) => n.toLocaleString('vi-VN') + '₫';
 
+/* ─── 2. PRODUCT CARD COMPONENT ───────────────────────────────── */
 function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
 
@@ -66,44 +78,8 @@ function ProductCard({ product }: { product: Product }) {
   );
 }
 
-function Sidebar() {
-  const [activeCategory, setActiveCategory] = useState('c1');
-  
-  return (
-    <aside className="w-[260px] flex-shrink-0 sticky top-24 h-fit hidden lg:flex flex-col gap-6">
-      <div className="bg-white rounded-2xl p-6 border border-[#e8f0fc] shadow-sm">
-        <h3 className="text-[15px] font-bold text-[#0d1f3c] mb-5 pb-3 border-b border-[#f5f8ff]">Danh mục</h3>
-        <nav className="flex flex-col gap-1.5">
-          {CATEGORIES.map((cat) => (
-            <button 
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-semibold transition-all text-left w-full group ${
-                activeCategory === cat.id 
-                  ? 'bg-[#82CAFA] text-white shadow-lg shadow-[#82CAFA]/20' 
-                  : 'text-[#4a6580] hover:bg-[#f5f8ff]'
-              }`}
-            >
-              <span className={`text-lg transition-transform group-hover:scale-110`}>{cat.icon}</span>
-              {cat.name}
-            </button>
-          ))}
-        </nav>
-      </div>
-
-      <div className="bg-gradient-to-br from-[#82CAFA] to-[#6abdf8] rounded-2xl p-6 text-white shadow-lg shadow-[#82CAFA]/20">
-        <h4 className="font-bold text-[16px] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Ưu đãi độc quyền</h4>
-        <p className="text-[12px] text-white/80 leading-relaxed mb-4">Nhận ngay voucher 50k khi đăng ký thành viên mới hôm nay!</p>
-        <button className="w-full bg-white text-[#82CAFA] py-2.5 rounded-xl text-[13px] font-bold hover:bg-[#f0f7ff] transition-colors shadow-sm">
-          Đăng ký ngay
-        </button>
-      </div>
-    </aside>
-  );
-}
-
+/* ─── 3. MAIN PAGE COMPONENT ───────────────────────────────── */
 export default function ProductsPage() {
-  const [sortBy, setSortBy] = useState('newest');
 
   return (
     <div className="bg-[#f8faff] min-h-screen py-10">
@@ -112,62 +88,49 @@ export default function ProductsPage() {
         {/* Page Title & Breadcrumbs */}
         <div className="mb-10">
           <div className="flex items-center gap-2 text-[12px] text-[#9eb3c8] font-medium mb-3">
-            <Link href="/" className="hover:text-[#82CAFA]">Trang chủ</Link>
+            <Link href="/" className="hover:text-[#82CAFA] transition-colors">Trang chủ</Link>
             <span>/</span>
             <span className="text-[#4a6580]">Sản phẩm</span>
           </div>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
               <h1 className="text-[32px] font-bold text-[#0d1f3c] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Tất cả sản phẩm</h1>
-              <p className="text-[14px] text-[#7a9ab5]">Khám phá hơn 2,400+ mỹ phẩm chính hãng chất lượng cao</p>
+              <p className="text-[14px] text-[#7a9ab5]">Khám phá bộ sưu tập mỹ phẩm chính hãng chất lượng cao</p>
             </div>
             
             <div className="flex items-center gap-3">
-              <span className="text-[13px] font-semibold text-[#4a6580]">Sắp xếp:</span>
-              <select 
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="bg-white border border-[#e8f0fc] rounded-xl px-4 py-2.5 text-[13px] font-bold text-[#0d1f3c] outline-none focus:border-[#82CAFA] transition-all cursor-pointer shadow-sm"
-              >
-                <option value="newest">Mới nhất</option>
-                <option value="price-low">Giá: Thấp đến Cao</option>
-                <option value="price-high">Giá: Cao đến Thấp</option>
-                <option value="popular">Phổ biến</option>
-              </select>
+              {/* Vùng chọn công cụ bộ lọc hoặc sắp xếp (nếu cần trong tương lai) */}
             </div>
           </div>
         </div>
 
-        <div className="flex gap-10">
-          <Sidebar />
+        {/* Main Content Layout */}
+        <main className="w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {MOCK_PRODUCTS.map((p) => (
+              <ProductCard key={p.MaSP} product={p} />
+            ))}
+          </div>
 
-          <main className="flex-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-              {MOCK_PRODUCTS.map((p) => (
-                <ProductCard key={p.MaSP} product={p} />
-              ))}
-            </div>
-
-            {/* Pagination Mock */}
-            <div className="mt-16 flex justify-center items-center gap-2">
-              {[1, 2, 3, '...', 12].map((page, i) => (
-                <button 
-                  key={i}
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center text-[14px] font-bold transition-all ${
-                    page === 1 
-                      ? 'bg-[#82CAFA] text-white shadow-lg shadow-[#82CAFA]/20' 
-                      : 'bg-white text-[#4a6580] border border-[#e8f0fc] hover:border-[#82CAFA] hover:text-[#82CAFA]'
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
-              <button className="px-5 h-10 rounded-xl bg-white text-[#4a6580] border border-[#e8f0fc] text-[14px] font-bold hover:border-[#82CAFA] hover:text-[#82CAFA] transition-all ml-2">
-                Tiếp theo →
+          {/* Pagination Mock */}
+          <div className="mt-16 flex justify-center items-center gap-2">
+            {[1, 2, 3, '...', 12].map((page, i) => (
+              <button 
+                key={i}
+                className={`w-10 h-10 rounded-xl flex items-center justify-center text-[14px] font-bold transition-all ${
+                  page === 1 
+                    ? 'bg-[#82CAFA] text-white shadow-lg shadow-[#82CAFA]/20' 
+                    : 'bg-white text-[#4a6580] border border-[#e8f0fc] hover:border-[#82CAFA] hover:text-[#82CAFA]'
+                }`}
+              >
+                {page}
               </button>
-            </div>
-          </main>
-        </div>
+            ))}
+            <button className="px-5 h-10 rounded-xl bg-white text-[#4a6580] border border-[#e8f0fc] text-[14px] font-bold hover:border-[#82CAFA] hover:text-[#82CAFA] transition-all ml-2">
+              Tiếp theo →
+            </button>
+          </div>
+        </main>
       </div>
     </div>
   );

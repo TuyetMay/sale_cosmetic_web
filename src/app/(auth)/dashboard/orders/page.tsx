@@ -2,117 +2,189 @@
 
 import { useState } from 'react';
 
-const fmt = (n: number) => n.toLocaleString('vi-VN') + '₫';
+type OrderStatus = 'Cho xu ly' | 'Dang giao' | 'Da giao';
 
-const MOCK_ORDERS = [
-  { id: '#LB-9921', customer: 'Nguyễn Văn A', email: 'vana@gmail.com', date: '2024-03-31 22:30', total: 1250000, status: 'pending', items: 3 },
-  { id: '#LB-9920', customer: 'Trần Thị B', email: 'thib@gmail.com', date: '2024-03-31 21:15', total: 840000, status: 'processing', items: 2 },
-  { id: '#LB-9919', customer: 'Lê Văn C', email: 'vanc@gmail.com', date: '2024-03-31 19:45', total: 2100000, status: 'delivering', items: 5 },
-  { id: '#LB-9918', customer: 'Phạm Minh D', email: 'minhd@gmail.com', date: '2024-03-31 18:00', total: 450000, status: 'completed', items: 1 },
-  { id: '#LB-9917', customer: 'Hoàng Gia E', email: 'giae@gmail.com', date: '2024-03-31 16:30', total: 320000, status: 'cancelled', items: 1 },
-];
-
-const ORDER_STATUSES: Record<string, { label: string, color: string, bg: string }> = {
-  'pending': { label: 'Chờ duyệt', color: '#f59e0b', bg: '#fffbeb' },
-  'processing': { label: 'Đang chuẩn bị', color: '#6366f1', bg: '#f5f5ff' },
-  'delivering': { label: 'Đang vận chuyển', color: '#82CAFA', bg: '#f0f7ff' },
-  'completed': { label: 'Đã hoàn thành', color: '#10b981', bg: '#ecfdf5' },
-  'cancelled': { label: 'Đã hủy', color: '#ef4444', bg: '#fef2f2' },
+type Order = {
+  MaDH: string;
+  MaTK: string;
+  NgayDatHang: string;
+  DiaChiGiaoHang: string;
+  TrangThaiDonHang: OrderStatus;
+  TongTien: number;
+  MaNV: string;
+  SanPhamItems: { MaSP: string; SoLuong: number }[];
 };
 
+const fmt = (n: number) => n.toLocaleString('vi-VN') + '₫';
+
+const MOCK_ORDERS: Order[] = [
+  { MaDH: 'DH01', MaTK: 'UID01', NgayDatHang: '2025-03-01', DiaChiGiaoHang: 'Hà Nội',     TrangThaiDonHang: 'Da giao',  TongTien: 795000,  MaNV: 'NV02', SanPhamItems: [{ MaSP: 'SP12', SoLuong: 2 }, { MaSP: 'SP01', SoLuong: 1 }] },
+  { MaDH: 'DH02', MaTK: 'UID02', NgayDatHang: '2025-03-02', DiaChiGiaoHang: 'TP HCM',     TrangThaiDonHang: 'Da giao',  TongTien: 490000,  MaNV: 'NV02', SanPhamItems: [{ MaSP: 'SP26', SoLuong: 2 }, { MaSP: 'SP14', SoLuong: 1 }, { MaSP: 'SP02', SoLuong: 1 }] },
+  { MaDH: 'DH03', MaTK: 'UID03', NgayDatHang: '2025-03-03', DiaChiGiaoHang: 'Đà Nẵng',   TrangThaiDonHang: 'Dang giao', TongTien: 452000,  MaNV: 'NV02', SanPhamItems: [{ MaSP: 'SP03', SoLuong: 1 }] },
+  { MaDH: 'DH04', MaTK: 'UID04', NgayDatHang: '2025-03-04', DiaChiGiaoHang: 'Cần Thơ',   TrangThaiDonHang: 'Cho xu ly', TongTien: 550000,  MaNV: 'NV02', SanPhamItems: [{ MaSP: 'SP16', SoLuong: 1 }, { MaSP: 'SP04', SoLuong: 2 }] },
+  { MaDH: 'DH05', MaTK: 'UID05', NgayDatHang: '2025-03-05', DiaChiGiaoHang: 'Huế',        TrangThaiDonHang: 'Da giao',  TongTien: 309000,  MaNV: 'NV02', SanPhamItems: [{ MaSP: 'SP17', SoLuong: 2 }, { MaSP: 'SP05', SoLuong: 1 }] },
+  { MaDH: 'DH06', MaTK: 'UID06', NgayDatHang: '2025-03-06', DiaChiGiaoHang: 'Hà Nội',    TrangThaiDonHang: 'Da giao',  TongTien: 1105000, MaNV: 'NV02', SanPhamItems: [{ MaSP: 'SP30', SoLuong: 1 }, { MaSP: 'SP18', SoLuong: 1 }, { MaSP: 'SP06', SoLuong: 1 }] },
+  { MaDH: 'DH07', MaTK: 'UID07', NgayDatHang: '2025-03-07', DiaChiGiaoHang: 'Hải Phòng', TrangThaiDonHang: 'Dang giao', TongTien: 672000,  MaNV: 'NV02', SanPhamItems: [{ MaSP: 'SP07', SoLuong: 2 }] },
+  { MaDH: 'DH08', MaTK: 'UID08', NgayDatHang: '2025-03-08', DiaChiGiaoHang: 'Nam Định',  TrangThaiDonHang: 'Da giao',  TongTien: 515000,  MaNV: 'NV02', SanPhamItems: [{ MaSP: 'SP20', SoLuong: 1 }, { MaSP: 'SP08', SoLuong: 1 }] },
+  { MaDH: 'DH09', MaTK: 'UID09', NgayDatHang: '2025-03-09', DiaChiGiaoHang: 'Quảng Ninh',TrangThaiDonHang: 'Cho xu ly', TongTien: 3565000, MaNV: 'NV02', SanPhamItems: [{ MaSP: 'SP34', SoLuong: 1 }, { MaSP: 'SP21', SoLuong: 1 }, { MaSP: 'SP09', SoLuong: 1 }] },
+  { MaDH: 'DH10', MaTK: 'UID10', NgayDatHang: '2025-03-10', DiaChiGiaoHang: 'Nghệ An',   TrangThaiDonHang: 'Da giao',  TongTien: 305000,  MaNV: 'NV02', SanPhamItems: [{ MaSP: 'SP10', SoLuong: 2 }] },
+];
+
+const STATUS_CONFIG: Record<OrderStatus, { label: string; dot: string; pillCls: string; textCls: string }> = {
+  'Cho xu ly': { label: 'Chờ xử lý',  dot: '#f59e0b', pillCls: 'bg-amber-50 border-amber-200',   textCls: 'text-amber-600'   },
+  'Dang giao': { label: 'Đang giao',  dot: '#6366f1', pillCls: 'bg-indigo-50 border-indigo-200', textCls: 'text-indigo-600'  },
+  'Da giao':   { label: 'Đã giao',    dot: '#10b981', pillCls: 'bg-emerald-50 border-emerald-200',textCls: 'text-emerald-600' },
+};
+
+
 export default function AdminOrdersPage() {
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState<'all' | OrderStatus>('all');
+  const [orders] = useState<Order[]>(MOCK_ORDERS);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [view, setView] = useState<'table' | 'form'>('table');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formData, setFormData] = useState<Order>({
+    MaDH: '',
+    MaTK: '',
+    NgayDatHang: '',
+    DiaChiGiaoHang: '',
+    TrangThaiDonHang: 'Cho xu ly',
+    TongTien: 0,
+    MaNV: 'NV03',
+    SanPhamItems: [],
+  });
+
+  const handleAddNew = () => {
+    setEditingId(null);
+    setFormData({
+      MaDH: '',
+      MaTK: '',
+      NgayDatHang: '',
+      DiaChiGiaoHang: '',
+      TrangThaiDonHang: 'Cho xu ly',
+      TongTien: 0,
+      MaNV: 'NV03',
+      SanPhamItems: [],
+    });
+    setView('form');
+  };
+
+  const filtered = orders.filter(o => (filter === 'all' || o.TrangThaiDonHang === filter)
+    && (searchQuery ? o.MaDH.includes(searchQuery) || o.MaTK.includes(searchQuery) : true));
 
   return (
-    <div className="space-y-10 min-h-screen">
-      <div className="flex items-center justify-between bg-white px-8 py-6 rounded-[32px] border border-[#e8f0fc] shadow-sm">
-        <div>
-          <h1 className="text-[28px] font-black text-[#0d1f3c]" style={{ fontFamily: 'Georgia, serif' }}>Quản lý đơn hàng</h1>
-          <p className="text-[14px] text-[#7a9ab5] font-medium">Theo dõi và cập nhật trạng thái đơn hàng của khách hàng.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="bg-[#f0f7ff] rounded-2xl px-5 py-3 flex flex-col items-center border border-[#82CAFA]/20">
-            <span className="text-[11px] font-bold text-[#82CAFA] uppercase tracking-widest">Đang chờ xử lý</span>
-            <span className="text-[22px] font-black text-[#0d1f3c]">12</span>
-          </div>
-          <div className="bg-[#ecfdf5] rounded-2xl px-5 py-3 flex flex-col items-center border border-[#10b981]/20">
-            <span className="text-[11px] font-bold text-[#10b981] uppercase tracking-widest">Giao thành công</span>
-            <span className="text-[22px] font-black text-[#0d1f3c]">45</span>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#f4f7fb] p-8 font-sans space-y-7">
 
-      <div className="bg-white rounded-[40px] border border-[#e8f0fc] shadow-sm overflow-hidden p-8">
-        <div className="flex items-center gap-4 mb-10 overflow-x-auto pb-2 scrollbar-hide">
-          {['all', 'pending', 'processing', 'delivering', 'completed', 'cancelled'].map((s) => (
-            <button 
-              key={s}
-              onClick={() => setFilter(s)}
-              className={`px-6 py-3 rounded-2xl text-[13px] font-bold transition-all whitespace-nowrap active:scale-95 ${
-                filter === s 
-                  ? 'bg-[#0d1f3c] text-white shadow-xl shadow-[#0d1f3c]/20' 
-                  : 'bg-[#f8faff] text-[#7a9ab5] border border-transparent hover:border-[#82CAFA] hover:text-[#82CAFA]'
-              }`}
-            >
-              {s === 'all' ? 'Tất cả đơn hàng' : ORDER_STATUSES[s]?.label ?? s}
-            </button>
-          ))}
-        </div>
+      <div className="flex justify-between items-center mb-6">
+                <div className="relative">
+                  <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a9ab5]" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                  <input 
+                    type="text" 
+                    placeholder="Tìm kiếm đơn hàng..." 
+                    value={searchQuery} 
+                    onChange={(e) => setSearchQuery(e.target.value)} 
+                    className="w-80 pl-11 pr-4 py-2.5 bg-white border border-[#d6eaff] rounded-xl text-sm outline-none focus:border-[#82CAFA] transition-colors shadow-sm" 
+                  />
+                </div>
+                
+              </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b border-[#f5f8ff] text-[12px] text-[#9eb3c8] font-extrabold uppercase tracking-widest bg-[#fcfdff]">
-                <th className="py-5 pl-6">Mã đơn hàng</th>
-                <th className="py-5">Khách hàng</th>
-                <th className="py-5">Ngày đặt</th>
-                <th className="py-5">Trạng thái</th>
-                <th className="py-5">Tổng tiền</th>
-                <th className="py-5 pr-6 text-right">Hành động</th>
+      {/* ── TABLE CARD ── */}
+      <div className="bg-white rounded-[28px] border border-[#e4ecf7] shadow-sm overflow-hidden">
+
+        
+      
+        {view === 'table' ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="text-xs font-bold text-[#4a6580] uppercase tracking-[0.12em] bg-[#fafcff] border-b border-[#eef2fa]">
+                  <th className="py-4 pl-7 pr-3 w-[90px]">Mã ĐH</th>
+                <th className="py-4 px-3 w-[95px]">Mã TK</th>
+                <th className="py-4 px-3 min-w-[170px]">Sản phẩm</th>
+                <th className="py-4 px-3 w-[110px]">Ngày đặt</th>
+                <th className="py-4 px-3 min-w-[120px]">Địa chỉ</th>
+                <th className="py-4 px-3 w-[130px] text-right">Tổng tiền</th>
+                <th className="py-4 px-3 w-[130px]">Trạng thái</th>
+                <th className="py-4 px-3 pr-7 w-[105px] text-right">Nhân viên</th>
               </tr>
             </thead>
             <tbody>
-              {MOCK_ORDERS.filter(o => filter === 'all' || o.status === filter).map((order) => (
-                <tr key={order.id} className="border-b border-[#fcfdff] hover:bg-[#f8faff] transition-colors rounded-2xl">
-                  <td className="py-6 pl-6 text-[14px] font-black text-[#82CAFA]">{order.id}</td>
-                  <td className="py-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#f0f7ff] flex items-center justify-center font-bold text-[#82CAFA] text-[13px]">{order.customer[0]}</div>
-                      <div>
-                        <p className="text-[14px] font-black text-[#0d1f3c] leading-none mb-1">{order.customer}</p>
-                        <p className="text-[11px] text-[#9eb3c8] font-medium">{order.email}</p>
+              {filtered.map((order) => {
+                const s = STATUS_CONFIG[order.TrangThaiDonHang];
+                return (
+                  <tr key={order.MaDH} className="border-b border-[#f3f7fc] hover:bg-[#f8fbff] transition-colors">
+
+                    <td className="py-4 pl-7 pr-3">
+                      <span className="text-[13px] font-black text-[#82CAFA] tracking-wide">{order.MaDH}</span>
+                    </td>
+
+                    <td className="py-4 px-3">
+                      <span className="text-[12px] font-bold text-[#6b87a8] bg-[#f0f7ff] border border-[#daeeff] px-2.5 py-1 rounded-lg">
+                        {order.MaTK}
+                      </span>
+                    </td>
+
+                    <td className="py-4 px-3">
+                      <div className="flex flex-wrap gap-1">
+                        {order.SanPhamItems.map((item, idx) => (
+                          <span key={idx} className="text-[11px] font-bold text-[#4a6580] bg-[#f0f7ff] border border-[#d6eaff] px-2 py-0.5 rounded-md whitespace-nowrap">
+                            {item.MaSP}<span className="text-[#82CAFA] ml-1">×{item.SoLuong}</span>
+                          </span>
+                        ))}
                       </div>
-                    </div>
-                  </td>
-                  <td className="py-6 text-[13px] font-bold text-[#4a6580]">{order.date}</td>
-                  <td className="py-6">
-                    <span className="px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider" 
-                          style={{ 
-                            color: ORDER_STATUSES[order.status]?.color ?? '#4a6580', 
-                            backgroundColor: ORDER_STATUSES[order.status]?.bg ?? '#f5f8ff' 
-                          }}>
-                      {ORDER_STATUSES[order.status]?.label ?? 'N/A'}
-                    </span>
-                  </td>
-                  <td className="py-6 text-[15px] font-extrabold text-[#e8363a]">{fmt(order.total)}</td>
-                  <td className="py-6 pr-6 text-right">
-                    <div className="flex items-center justify-end gap-3">
-                      <select className="bg-[#f0f7ff] text-[#82CAFA] px-3 py-1.5 rounded-xl text-[11px] font-bold outline-none border border-transparent focus:border-[#82CAFA]">
-                        <option>Cập nhật trạng thái</option>
-                        <option>Xác nhận đơn hàng</option>
-                        <option>Bắt đầu giao</option>
-                        <option>Hoàn thành</option>
-                        <option>Hủy đơn</option>
-                      </select>
-                      <button className="w-10 h-10 rounded-xl bg-[#f8faff] text-[#4a6580] flex items-center justify-center hover:bg-[#82CAFA] hover:text-white transition-all shadow-sm active:scale-90" title="Chi tiết đơn hàng">
-                         📊
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+
+                    <td className="py-4 px-3">
+                      <span className="text-[12px] font-semibold text-[#5a7898]">{order.NgayDatHang}</span>
+                    </td>
+
+                    <td className="py-4 px-3">
+                      <span className="text-[12px] font-medium text-[#7a9ab5]">{order.DiaChiGiaoHang}</span>
+                    </td>
+
+                    <td className="py-4 px-3 text-right">
+                      <span className="text-[14px] font-extrabold text-[#e8363a]">{fmt(order.TongTien)}</span>
+                    </td>
+
+                    <td className="py-4 px-3">
+                      <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full border ${s.pillCls} ${s.textCls}`}>
+                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: s.dot }} />
+                        {s.label}
+                      </span>
+                    </td>
+
+                    <td className="py-4 px-3 pr-7 text-right">
+                      <span className="text-[11px] font-bold text-[#9eb3c8] bg-[#f5f8ff] border border-[#e8f0fc] px-2.5 py-1 rounded-lg">
+                        {order.MaNV}
+                      </span>
+                    </td>
+
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
+
+          {filtered.length === 0 && (
+            <div className="py-16 text-center">
+              <p className="text-[#8fa8c0] font-medium text-sm">Không có đơn hàng nào trong trạng thái này.</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="p-16 text-center text-[#4a6580]">
+          <p className="text-lg font-bold">Chức năng form đang phát triển...</p>
+          <p className="text-sm text-[#7a9ab5] mt-2">Dữ liệu mẫu hiện tại: {formData.MaDH || 'none'}</p>
+        </div>
+      )}
+
+      {/* Footer */}
+        <div className="px-7 py-3.5 border-t border-[#eef2fa] flex items-center justify-between">
+          <p className="text-[12px] text-[#9eb3c8] font-medium">
+            Hiển thị <span className="font-bold text-[#4a6580]">{filtered.length}</span> / {orders.length} đơn hàng
+          </p>
+          <p className="text-[11px] text-[#b8cfe0] font-medium">Kỳ: 01/03/2025 – 10/03/2025</p>
         </div>
       </div>
     </div>

@@ -32,8 +32,6 @@ export default function Header() {
         {/* Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           <Link href="/products" className="text-[14px] font-semibold text-[#4a6580] hover:text-[#82CAFA] transition-colors">Sản Phẩm</Link>
-          <Link href="/promotions" className="text-[14px] font-semibold text-[#4a6580] hover:text-[#82CAFA] transition-colors">Khuyến Mãi</Link>
-          <Link href="/about" className="text-[14px] font-semibold text-[#4a6580] hover:text-[#82CAFA] transition-colors">Về Chúng Tôi</Link>
         </nav>
       </div>
 
@@ -90,7 +88,6 @@ export default function Header() {
                 {[
                   { label: 'Tài khoản của tôi', icon: '👤', href: '/profile' },
                   { label: 'Đơn hàng của tôi', icon: '📦', href: '/orders' },
-                  { label: 'Sản phẩm yêu thích', icon: '❤️', href: '/wishlist' },
                 ].map((item) => (
                   <Link key={item.label} href={item.href} className="flex items-center gap-3 px-5 py-2.5 text-[13px] text-[#4a6580] hover:bg-[#f5f8ff] hover:text-[#82CAFA] transition-colors">
                     <span className="text-[16px]">{item.icon}</span> {item.label}

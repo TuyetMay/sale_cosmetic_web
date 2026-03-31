@@ -6,10 +6,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ReactNode } from 'react';
 
 const MENU_ITEMS = [
-  { label: 'Tổng quan', href: '/dashboard', icon: '📊' },
-  { label: 'Sản phẩm', href: '/dashboard/products', icon: '📦' },
-  { label: 'Đơn hàng', href: '/dashboard/orders', icon: '📝' },
-  { label: 'Người dùng', href: '/dashboard/users', icon: '👥' },
+  { label: ' Quản lý sản phẩm', href: '/dashboard/products', icon: '📦' },
+  { label: 'Quản lý xuất kho', href: '/dashboard/orders', icon: '📝' },
+  { label: 'Quản lý nhập kho', href: '/dashboard/users', icon: '👥' },
   { label: 'Báo cáo', href: '/dashboard/reports', icon: '📈' },
 ];
 
@@ -25,9 +24,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex h-screen bg-[#f8faff] overflow-hidden">
+    <div className="bg-[#f8faff]">
       {/* Admin Sidebar */}
-      <aside className="w-[280px] bg-[#0d1f3c] text-white flex flex-col h-full shadow-2xl shadow-[#0d1f3c]/40 z-50">
+      <aside className="fixed left-0 top-0 h-screen w-[240px] bg-[#0d1f3c] text-white flex flex-col shadow-2xl shadow-[#0d1f3c]/40 z-50">
         <div className="p-8 pb-10">
           <Link href="/" className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#82CAFA] flex items-center justify-center text-2xl">✨</div>
@@ -69,19 +68,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 <p className="text-[11px] text-white/40 uppercase tracking-wider font-medium">{user?.role}</p>
               </div>
             </div>
-            <button 
-              onClick={() => { logout(); router.push('/sign-in'); }}
-              className="w-full bg-[#e8363a] text-white py-2.5 rounded-xl text-[12px] font-bold hover:bg-[#ff4d4d] transition-colors shadow-lg shadow-[#e8363a]/20"
-            >
-              Đăng xuất ⎋
-            </button>
-          </div>
-          <p className="text-center text-[11px] text-white/30 font-medium">© 2024 Luxé Beauty System</p>
         </div>
+        </div>
+
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+      <main className="ml-[240px] flex flex-col h-screen overflow-hidden">
         {/* Top Header */}
         <header className="h-[96px] bg-white border-b border-[#e8f0fc] px-10 flex items-center justify-between flex-shrink-0 z-40">
           <div>
@@ -102,15 +95,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </button>
             <div className="w-px h-8 bg-[#e8f0fc]" />
             <div className="flex items-center gap-3">
-              <div className="text-right">
-                <p className="text-[14px] font-bold text-[#0d1f3c]">{user?.firstName} {user?.lastName}</p>
-                <p className="text-[11px] text-[#9eb3c8] font-medium">Bán hàng tối ưu</p>
-              </div>
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#82CAFA] to-[#6abdf8] p-0.5 shadow-md">
-                <div className="w-full h-full bg-[#0d1f3c] rounded-[14px] flex items-center justify-center font-bold text-white text-[14px]">
-                   {user?.firstName?.[0]}
-                </div>
-              </div>
+              <div className="ml-auto flex items-center gap-3">
+             <div className="w-8 h-8 rounded-full bg-[#1a2f50] text-white flex items-center justify-center font-bold text-sm">NV</div>
+             <span className="text-sm font-semibold text-[#4a6580]">NV03 - Admin</span>
+          </div>
             </div>
           </div>
         </header>
