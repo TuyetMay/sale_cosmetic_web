@@ -14,7 +14,7 @@ export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-[#e8f0fc] px-6 h-[72px] flex items-center justify-between shadow-sm">
+    <header className="sticky top-0 z-50 bg-white border-b border-[#e8f0fc] px-10 h-[80px] flex items-center justify-between shadow-sm">
       <div className="flex items-center gap-8">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -80,6 +80,11 @@ export default function Header() {
               <div className="px-5 py-4 border-b border-[#e8f0fc] bg-[#fcfdff]">
                 <p className="text-[14px] font-bold text-[#0d1f3c]">{user ? `${user.firstName} ${user.lastName}` : 'Khách hàng'}</p>
                 <p className="text-[11px] text-[#9eb3c8] truncate mt-0.5">{user?.email ?? 'luxebeauty.vn'}</p>
+                {user?.role === 'seller' && (
+                  <Link href="/dashboard" className="block mt-2 text-[11px] font-bold text-[#82CAFA] uppercase tracking-widest hover:underline">
+                    Dashboard Admin 📊
+                  </Link>
+                )}
               </div>
               <div className="py-2">
                 {[

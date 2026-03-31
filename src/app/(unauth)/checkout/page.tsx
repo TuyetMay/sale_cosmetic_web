@@ -47,7 +47,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="bg-[#f8faff] min-h-screen py-16">
-      <div className="max-w-[1200px] mx-auto px-6">
+      <div className="max-w-full mx-auto px-10">
         <h1 className="text-4xl font-extrabold text-[#0d1f3c] mb-12" style={{ fontFamily: 'Georgia, serif' }}>Thanh toán</h1>
 
         <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-3 gap-12">

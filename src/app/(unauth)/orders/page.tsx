@@ -21,7 +21,7 @@ const STATUS_MAP: Record<string, { label: string, color: string, bg: string }> =
 export default function OrdersPage() {
   return (
     <div className="bg-[#f8faff] min-h-screen py-16">
-      <div className="max-w-[1000px] mx-auto px-6">
+      <div className="max-w-full mx-auto px-10">
         <h1 className="text-4xl font-extrabold text-[#0d1f3c] mb-12" style={{ fontFamily: 'Georgia, serif' }}>Lịch sử đơn hàng</h1>
 
         <div className="space-y-6">

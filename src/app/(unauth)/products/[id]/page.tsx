@@ -48,7 +48,7 @@ export default function ProductDetailPage() {
 
   return (
     <div className="bg-[#f8faff] min-h-screen py-12">
-      <div className="max-w-[1200px] mx-auto px-6">
+      <div className="max-w-full mx-auto px-10">
         
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-[13px] text-[#9eb3c8] font-medium mb-10">

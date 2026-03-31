@@ -107,7 +107,7 @@ export default function ProductsPage() {
 
   return (
     <div className="bg-[#f8faff] min-h-screen py-10">
-      <div className="max-w-[1400px] mx-auto px-6">
+      <div className="max-w-full mx-auto px-10">
         
         {/* Page Title & Breadcrumbs */}
         <div className="mb-10">

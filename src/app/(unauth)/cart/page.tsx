@@ -25,7 +25,7 @@ export default function CartPage() {
 
   return (
     <div className="bg-[#f8faff] min-h-screen py-16">
-      <div className="max-w-[1200px] mx-auto px-6">
+      <div className="max-w-full mx-auto px-10">
         <div className="flex items-baseline gap-4 mb-10">
           <h1 className="text-4xl font-extrabold text-[#0d1f3c]" style={{ fontFamily: 'Georgia, serif' }}>Giỏ hàng</h1>
           <span className="text-lg text-[#9eb3c8] font-bold">({totalItems} sản phẩm)</span>

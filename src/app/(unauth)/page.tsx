@@ -9,7 +9,7 @@ export default function LandingPage() {
       <section className="relative min-h-[90vh] flex items-center pt-20">
         <div className="absolute top-0 right-0 w-1/2 h-full bg-[#f0f7ff] rounded-bl-[120px] -z-10 hidden lg:block" />
         
-        <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-full mx-auto px-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="flex flex-col gap-8 max-w-2xl">
             <div className="inline-flex items-center gap-2 bg-[#f0f7ff] border border-[#82CAFA]/20 px-4 py-2 rounded-full w-fit">
               <span className="flex h-2 w-2 rounded-full bg-[#82CAFA] animate-pulse" />
