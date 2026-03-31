@@ -30,6 +30,7 @@ interface AuthContextType {
     role: UserRole
   ) => Promise<{ success: boolean; message: string }>;
   register: (data: RegisterData) => Promise<{ success: boolean; message: string }>;
+  updateProfile: (data: Partial<User>) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
 }
 
@@ -187,6 +188,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { success: true, message: 'Tài khoản được tạo thành công!' };
   };
 
+  // ── Update Profile ────────────────────────────────────────────────────────
+  const updateProfile = async (
+    data: Partial<User>
+  ): Promise<{ success: boolean; message: string }> => {
+    await new Promise((r) => setTimeout(r, 800)); // simulate network
+
+    if (!user) return { success: false, message: 'Bạn chưa đăng nhập' };
+
+    const updatedUser = { ...user, ...data };
+    setUser(updatedUser);
+    saveCurrentUser(updatedUser);
+    
+    // Also update in users list if it was a registered user
+    const allUsers = getStoredUsers();
+    const userIndex = allUsers.findIndex(u => u.id === user.id);
+    if (userIndex !== -1) {
+      allUsers[userIndex] = { ...allUsers[userIndex], ...data } as User & { password: string };
+      saveUsers(allUsers);
+    }
+    
+    return { success: true, message: 'Cập nhật thông tin thành công!' };
+  };
+
   // ── Logout ─────────────────────────────────────────────────────────────────
   const logout = () => {
     setUser(null);
@@ -194,7 +218,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, updateProfile, logout }}>
       {children}
     </AuthContext.Provider>
   );

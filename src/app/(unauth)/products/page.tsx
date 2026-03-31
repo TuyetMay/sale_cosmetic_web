@@ -1,12 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
 import { MOCK_PRODUCTS } from '@/data/mockProducts'; 
 import type { Product } from '@/data/mockProducts'; 
+import { useCart } from '@/contexts/CartContext';
 
-/* ─── Mock Data cho UI (Không có trong DB) ───────────────────────────────── */
 const CATEGORIES = [
   { id: 'c1', name: 'Chăm sóc da', icon: '🧴' },
   { id: 'c2', name: 'Trang điểm', icon: '💄' },
@@ -16,45 +15,50 @@ const CATEGORIES = [
   { id: 'c6', name: 'Thực phẩm', icon: '💊' },
 ];
 
-/* ─── Helpers ────────────────────────────────────────────────────────────── */
 const fmt = (n: number) => n.toLocaleString('vi-VN') + '₫';
 
-/* ─── Product Card ───────────────────────────────────────────────────────── */
-function ProductCard({ product, size = 'md' }: { product: Product; size?: 'sm' | 'md' | 'lg' }) {
-  const [hovered, setHovered] = useState(false);
-
-  const cardW = size === 'lg' ? 'w-[220px]' : size === 'sm' ? 'w-[160px]' : 'w-[190px]';
-  const imgH  = size === 'lg' ? 'h-[220px]' : size === 'sm' ? 'h-[160px]' : 'h-[190px]';
+function ProductCard({ product }: { product: Product }) {
+  const { addToCart } = useCart();
 
   return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className={`${cardW} flex-shrink-0 bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-200 border border-[#e8f0fc] flex flex-col`}
-      style={{ boxShadow: hovered ? '0 4px 20px rgba(130,202,250,0.18)' : '0 1px 4px rgba(0,0,0,0.05)', transform: hovered ? 'translateY(-2px)' : 'none' }}
-    >
-      <div className={`${imgH} w-full flex flex-col items-center justify-center bg-gradient-to-br from-[#f0f7ff] to-[#e8f0fc] relative`}>
-        <span className="text-5xl opacity-80 mb-2">📦</span>
-        <span className="text-[10px] text-[#9eb3c8] font-medium tracking-wider uppercase">No Image</span>
-        
-        <span className="absolute top-2 left-2 bg-white text-[#4a6580] text-[10px] font-semibold px-2 py-0.5 rounded border border-[#dde9f7] shadow-sm">
+    <div className="group bg-white rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-[#82CAFA]/10 transition-all duration-300 border border-[#e8f0fc] flex flex-col h-full relative">
+      <Link
+        href={`/products/${product.MaSP}`}
+        className="aspect-square w-full flex flex-col items-center justify-center bg-gradient-to-br from-[#f8fbff] to-[#f0f7ff] relative overflow-hidden"
+      >
+        <span className="text-6xl group-hover:scale-110 transition-transform duration-500 opacity-80">📦</span>
+        <div className="absolute inset-0 bg-[#82CAFA]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-[#4a6580] text-[10px] font-bold px-2.5 py-1 rounded-lg border border-[#e8f0fc] shadow-sm uppercase tracking-wider">
           {product.MaSP}
         </span>
-      </div>
+      </Link>
 
-      <div className="p-4 flex flex-col flex-1">
-        <p className="text-[13px] text-[#0d1f3c] leading-snug line-clamp-2 mb-1.5 font-bold" title={product.TenSP}>
-          {product.TenSP}
-        </p>
+      {/* Quick Add Button */}
+      <button 
+        onClick={(e) => { e.preventDefault(); addToCart(product); }}
+        className="absolute top-3 right-3 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-xl border border-[#e8f0fc] flex items-center justify-center text-[#82CAFA] opacity-0 group-hover:opacity-100 transition-all hover:bg-[#82CAFA] hover:text-white shadow-sm active:scale-90"
+        title="Thêm nhanh vào giỏ"
+      >
+        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+      </button>
+
+      <div className="p-5 flex flex-col flex-1">
+        <Link href={`/products/${product.MaSP}`}>
+          <h3 className="text-[14px] font-bold text-[#0d1f3c] leading-tight mb-2 group-hover:text-[#82CAFA] transition-colors line-clamp-2" title={product.TenSP}>
+            {product.TenSP}
+          </h3>
+        </Link>
         
-        <p className="text-[11px] text-[#7a9ab5] line-clamp-2 mb-3 flex-1" title={product.MoTaSP}>
-          {product.MoTaSP || 'Chưa có mô tả'}
+        <p className="text-[12px] text-[#7a9ab5] line-clamp-2 mb-4 flex-1 leading-relaxed">
+          {product.MoTaSP || 'Khám phá bí quyết vẻ đẹp rạng ngời với sản phẩm cao cấp từ Luxé Beauty...'}
         </p>
 
-        <div className="flex items-end justify-between mt-auto">
-          <span className="text-[#e8363a] text-[15px] font-bold">{fmt(product.GiaBanHienTai)}</span>
-          <span className="text-[11px] font-medium px-2 py-1 rounded bg-[#f5f9ff] text-[#4a6580]">
-            Kho: {product.SoLuongConLai}
+        <div className="flex items-center justify-between pt-3 border-t border-[#f5f8ff] mt-auto">
+          <span className="text-[#e8363a] text-[17px] font-extrabold">{fmt(product.GiaBanHienTai)}</span>
+          <span className="text-[11px] font-bold px-2 py-1 rounded-full bg-[#f0f7ff] text-[#82CAFA]">
+            Còn {product.SoLuongConLai}
           </span>
         </div>
       </div>
@@ -62,196 +66,108 @@ function ProductCard({ product, size = 'md' }: { product: Product; size?: 'sm' |
   );
 }
 
-/* ─── Section Header ─────────────────────────────────────────────────────── */
-function SectionHeader({ title, action }: { title: string; action?: string }) {
-  return (
-    <div className="flex items-center justify-between mb-5">
-      <h2 className="text-[20px] font-semibold text-[#0d1f3c]" style={{ fontFamily: 'Georgia, serif' }}>{title}</h2>
-      {action && (
-        <button className="text-[13px] text-[#82CAFA] font-medium hover:text-[#5db8f5] transition-colors">
-          {action} →
-        </button>
-      )}
-    </div>
-  );
-}
-
-/* ─── Sidebar ────────────────────────────────────────────────────────────── */
 function Sidebar() {
-  const navLinks = [
-    { label: 'Trang chủ', icon: '⌂', href: '/' },
-    { label: 'Giỏ hàng', icon: '📦', href: '/orders' },
-    { label: 'Thanh toán', icon: '💳', href: '/checkout' },
-    { label: 'Theo dõi đơn hàng', icon: '💳', href: '/checkout' }
-  ];
-
+  const [activeCategory, setActiveCategory] = useState('c1');
+  
   return (
-    <aside className="w-[220px] flex-shrink-0 flex flex-col gap-4">
-      <div className="bg-white rounded-2xl p-4 border border-[#e8f0fc] shadow-sm">
-        <div className="flex items-center gap-2.5 mb-4">
-          <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: '#82CAFA' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2C9.2 2 7 4.2 7 7c0 1.8.9 3.4 2.3 4.4C6.8 12.5 5 14.9 5 17.7V20h14v-2.3c0-2.8-1.8-5.2-4.3-6.3C16.1 10.4 17 8.8 17 7c0-2.8-2.2-5-5-5z" fill="white" opacity="0.9"/>
-            </svg>
-          </div>
-          <div>
-            <p className="text-[14px] font-semibold text-[#0d1f3c]" style={{ fontFamily: 'Georgia, serif' }}>Luxé Beauty</p>
-            <p className="text-[10px] text-[#9eb3c8] tracking-widest uppercase">Mỹ phẩm chính hãng</p>
-          </div>
-        </div>
-
-        <nav className="flex flex-col gap-1">
-          {navLinks.map((l) => (
-            <button key={l.label}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] text-[#4a6580] font-medium hover:bg-[#f0f7ff] hover:text-[#82CAFA] transition-all text-left w-full">
-              <span style={{ fontSize: 15 }}>{l.icon}</span>
-              {l.label}
+    <aside className="w-[260px] flex-shrink-0 sticky top-24 h-fit hidden lg:flex flex-col gap-6">
+      <div className="bg-white rounded-2xl p-6 border border-[#e8f0fc] shadow-sm">
+        <h3 className="text-[15px] font-bold text-[#0d1f3c] mb-5 pb-3 border-b border-[#f5f8ff]">Danh mục</h3>
+        <nav className="flex flex-col gap-1.5">
+          {CATEGORIES.map((cat) => (
+            <button 
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-semibold transition-all text-left w-full group ${
+                activeCategory === cat.id 
+                  ? 'bg-[#82CAFA] text-white shadow-lg shadow-[#82CAFA]/20' 
+                  : 'text-[#4a6580] hover:bg-[#f5f8ff]'
+              }`}
+            >
+              <span className={`text-lg transition-transform group-hover:scale-110`}>{cat.icon}</span>
+              {cat.name}
             </button>
           ))}
         </nav>
       </div>
 
-      
+      <div className="bg-gradient-to-br from-[#82CAFA] to-[#6abdf8] rounded-2xl p-6 text-white shadow-lg shadow-[#82CAFA]/20">
+        <h4 className="font-bold text-[16px] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Ưu đãi độc quyền</h4>
+        <p className="text-[12px] text-white/80 leading-relaxed mb-4">Nhận ngay voucher 50k khi đăng ký thành viên mới hôm nay!</p>
+        <button className="w-full bg-white text-[#82CAFA] py-2.5 rounded-xl text-[13px] font-bold hover:bg-[#f0f7ff] transition-colors shadow-sm">
+          Đăng ký ngay
+        </button>
+      </div>
     </aside>
   );
 }
 
-/* ─── Top Header ─────────────────────────────────────────────────────────── */
-function TopHeader({ cartCount }: { cartCount: number }) {
-  const { user, logout } = useAuth();
-  const router = useRouter();
-  const [search, setSearch] = useState('');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+export default function ProductsPage() {
+  const [sortBy, setSortBy] = useState('newest');
 
   return (
-    <header className="sticky top-0 z-30 bg-[#27A4F2] px-6 h-[70px] flex items-center gap-6 shadow-md">
-      <div className="lg:hidden flex items-center gap-2">
-        <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#82CAFA' }}>
-          <span className="text-white text-xs font-bold">L</span>
-        </div>
-      </div>
-
-      <div className="flex-1 relative max-w-[600px]">
-        <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a9ab5]" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Tìm kiếm theo Tên sản phẩm hoặc Mã SP..."
-          className="w-full pl-11 pr-4 py-2.5 bg-[#1a2f50] border-2 border-transparent rounded-xl text-[14px] text-white outline-none focus:border-[#82CAFA] focus:bg-[#20385e] transition-all placeholder-[#7a9ab5]"
-        />
-      </div>
-
-      <div className="ml-auto flex items-center gap-4">
-        <button className="relative w-10 h-10 rounded-xl flex items-center justify-center bg-[#1a2f50] border border-transparent hover:border-[#82CAFA] text-white transition-colors">
-          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
-            <path d="M16 10a4 4 0 0 1-8 0"/>
-          </svg>
-          {cartCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#e8363a] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#0d1f3c] shadow-sm">
-              {cartCount}
-            </span>
-          )}
-        </button>
-
-        <div className="relative">
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-[#1a2f50] transition-colors border border-transparent"
-          >
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold text-[#0d1f3c] bg-white">
-              {user?.firstName?.[0] ?? 'K'}
+    <div className="bg-[#f8faff] min-h-screen py-10">
+      <div className="max-w-[1400px] mx-auto px-6">
+        
+        {/* Page Title & Breadcrumbs */}
+        <div className="mb-10">
+          <div className="flex items-center gap-2 text-[12px] text-[#9eb3c8] font-medium mb-3">
+            <Link href="/" className="hover:text-[#82CAFA]">Trang chủ</Link>
+            <span>/</span>
+            <span className="text-[#4a6580]">Sản phẩm</span>
+          </div>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <h1 className="text-[32px] font-bold text-[#0d1f3c] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Tất cả sản phẩm</h1>
+              <p className="text-[14px] text-[#7a9ab5]">Khám phá hơn 2,400+ mỹ phẩm chính hãng chất lượng cao</p>
             </div>
-            <span className="text-[14px] font-semibold text-white hidden sm:block">
-              {user?.firstName ?? 'Khách hàng'}
-            </span>
-          </button>
-
-          {dropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-[#e8f0fc] rounded-xl shadow-lg overflow-hidden z-50">
-              <div className="px-4 py-3 border-b border-[#e8f0fc]">
-                <p className="text-[13px] font-semibold text-[#0d1f3c]">{user?.firstName} {user?.lastName}</p>
-                <p className="text-[11px] text-[#9eb3c8] truncate">{user?.email}</p>
-              </div>
-              {[
-                { label: 'Tài khoản của tôi', icon: '👤' },
-                { label: 'Giỏ hàng', icon: '📦' },
-              ].map((item) => (
-                <button key={item.label} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] text-[#4a6580] hover:bg-[#f5f9ff] transition-colors">
-                  <span style={{ fontSize: 13 }}>{item.icon}</span> {item.label}
-                </button>
-              ))}
-              <div className="border-t border-[#e8f0fc]">
-                <button
-                  onClick={() => { logout(); router.push('/sign-in'); }}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] text-[#e8363a] hover:bg-[#fff5f5] transition-colors"
-                >
-                  <span style={{ fontSize: 13 }}>⎋</span> Đăng xuất
-                </button>
-              </div>
+            
+            <div className="flex items-center gap-3">
+              <span className="text-[13px] font-semibold text-[#4a6580]">Sắp xếp:</span>
+              <select 
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-white border border-[#e8f0fc] rounded-xl px-4 py-2.5 text-[13px] font-bold text-[#0d1f3c] outline-none focus:border-[#82CAFA] transition-all cursor-pointer shadow-sm"
+              >
+                <option value="newest">Mới nhất</option>
+                <option value="price-low">Giá: Thấp đến Cao</option>
+                <option value="price-high">Giá: Cao đến Thấp</option>
+                <option value="popular">Phổ biến</option>
+              </select>
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    </header>
-  );
-}
 
-/* ─── Page ───────────────────────────────────────────────────────────────── */
-export default function HomePage() {
-  const [cartCount] = useState(2);
-
-  return (
-    <div className="min-h-screen bg-[#f5f8ff] font-[DM_Sans,sans-serif]">
-      <TopHeader cartCount={cartCount} />
-
-      <div className="flex gap-6 p-6 max-w-[14000px] mx-auto">
-        {/* Sidebar */}
-        <div className="hidden lg:block">
+        <div className="flex gap-10">
           <Sidebar />
-        </div>
 
-        {/* Main Content */}
-        <main className="flex-1 min-w-0">
-          
-          {/* ─── SECTION: DANH MỤC SẢN PHẨM ─── */}
-          <section className="bg-white rounded-2xl p-6 border border-[#e8f0fc] shadow-sm mb-6">
-            <SectionHeader title="Danh Mục Sản Phẩm" />
-            
-            {/* Scroll ngang trên thiết bị nhỏ */}
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-              {CATEGORIES.map((cat) => (
+          <main className="flex-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+              {MOCK_PRODUCTS.map((p) => (
+                <ProductCard key={p.MaSP} product={p} />
+              ))}
+            </div>
+
+            {/* Pagination Mock */}
+            <div className="mt-16 flex justify-center items-center gap-2">
+              {[1, 2, 3, '...', 12].map((page, i) => (
                 <button 
-                  key={cat.id} 
-                  className="flex flex-col items-center gap-3 min-w-[90px] p-3 rounded-xl hover:bg-[#f0f7ff] transition-colors border border-transparent hover:border-[#d6eaff] group"
+                  key={i}
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center text-[14px] font-bold transition-all ${
+                    page === 1 
+                      ? 'bg-[#82CAFA] text-white shadow-lg shadow-[#82CAFA]/20' 
+                      : 'bg-white text-[#4a6580] border border-[#e8f0fc] hover:border-[#82CAFA] hover:text-[#82CAFA]'
+                  }`}
                 >
-                  <div className="w-16 h-16 bg-[#f5f9ff] rounded-full flex items-center justify-center text-3xl shadow-sm border border-[#e8f0fc] group-hover:scale-105 transition-transform duration-200">
-                    {cat.icon}
-                  </div>
-                  <span className="text-[13px] font-medium text-[#4a6580] text-center group-hover:text-[#82CAFA] transition-colors">
-                    {cat.name}
-                  </span>
+                  {page}
                 </button>
               ))}
+              <button className="px-5 h-10 rounded-xl bg-white text-[#4a6580] border border-[#e8f0fc] text-[14px] font-bold hover:border-[#82CAFA] hover:text-[#82CAFA] transition-all ml-2">
+                Tiếp theo →
+              </button>
             </div>
-          </section>
-
-          {/* ─── SECTION: DANH SÁCH SẢN PHẨM ─── */}
-          <section className="bg-white rounded-2xl p-6 border border-[#e8f0fc] shadow-sm">
-            <SectionHeader title="Danh Sách Sản Phẩm" action="Xem tất cả" />
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-3">
-              {MOCK_PRODUCTS.map((p) => (
-                <div key={p.MaSP}>
-                  <ProductCard product={p} size="lg" />
-                </div>
-              ))}
-            </div>
-          </section>
-
-        </main>
+          </main>
+        </div>
       </div>
     </div>
   );
