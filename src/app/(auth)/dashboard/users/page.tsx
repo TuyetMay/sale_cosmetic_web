@@ -32,12 +32,9 @@ export default function AdminImportsPage() {
     i.MaSP.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const tongTienTong = imports.reduce((s, i) => s + i.TongTienNhap, 0);
-  const tongSanPham  = imports.reduce((s, i) => s + i.SoLuongSanPham, 0);
 
   // Mở Form
   const handleOpenForm = () => {
-    const today = new Date().toISOString().split('T')[0];
     setFormData({ MaDonNhap: '', NgayNhapHang: '', MaSP: '', SoLuongSanPham: 0, GiaNhap: 0, MaNV: 'NV01' });
     setIsModalOpen(true);
   };

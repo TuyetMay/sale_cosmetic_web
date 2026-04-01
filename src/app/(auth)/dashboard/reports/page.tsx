@@ -1,16 +1,13 @@
 'use client';
 
-import { useState } from 'react';
 
 const fmt = (n: number) => n.toLocaleString('vi-VN') + '₫';
 
 // 1. Mock Data: Doanh thu theo tháng
 const MONTHLY_REVENUE = [
-  { month: 'Tháng 1/2024', orders: 342, revenue: 855000000 },
-  { month: 'Tháng 2/2024', orders: 289, revenue: 620000000 },
-  { month: 'Tháng 3/2024', orders: 415, revenue: 1150000000 },
-  { month: 'Tháng 4/2024', orders: 390, revenue: 980000000 },
-  { month: 'Tháng 5/2024', orders: 512, revenue: 1420000000 },
+  { month: 'Tháng 3/2025',  revenue: 11354000 },
+  { month: 'Tháng 4/2025',  revenue: 19662000 },
+  { month: 'Tháng 5/2025',  revenue: 3330000 },
 ];
 
 // 2. Mock Data: Sản phẩm bán chạy
@@ -32,7 +29,6 @@ const LOW_STOCK = [
 ];
 
 export default function AdminReportsPage() {
-  const [reportType, setReportType] = useState('month');
 
   return (
     <div className="space-y-6 min-h-screen bg-[#f4f7fb] p-6 lg:p-8 font-sans text-[#0d1f3c]">
@@ -60,7 +56,6 @@ export default function AdminReportsPage() {
               <thead>
                 <tr className="border-b border-[#e4ecf7] bg-[#f8faff] text-[#5a7898] font-semibold">
                   <th className="py-3 px-4 uppercase tracking-wider text-xs">Kỳ báo cáo</th>
-                  <th className="py-3 px-4 text-right uppercase tracking-wider text-xs">Số đơn hàng</th>
                   <th className="py-3 px-4 text-right uppercase tracking-wider text-xs">Tổng Doanh thu</th>
                 </tr>
               </thead>
@@ -68,7 +63,6 @@ export default function AdminReportsPage() {
                 {MONTHLY_REVENUE.map((row, index) => (
                   <tr key={index} className="border-b border-[#f0f4f8] hover:bg-[#fcfcfd] transition-colors">
                     <td className="py-3 px-4 font-medium text-[#0d1f3c]">{row.month}</td>
-                    <td className="py-3 px-4 text-right text-[#4a6580]">{row.orders} đơn</td>
                     <td className="py-3 px-4 text-right font-semibold text-[#1a73e8]">{fmt(row.revenue)}</td>
                   </tr>
                 ))}
@@ -81,12 +75,12 @@ export default function AdminReportsPage() {
         <div className="space-y-6">
           <div className="bg-[#0d1f3c] border border-[#0d1f3c] rounded-sm p-6 text-white shadow-sm flex flex-col justify-center h-[160px]">
             <p className="text-sm text-[#82CAFA] font-medium uppercase tracking-wider mb-2">Tổng doanh thu YTD</p>
-            <h3 className="text-3xl font-semibold tracking-tight">5.02B ₫</h3>
+            <h3 className="text-3xl font-semibold tracking-tight">34.346.000₫</h3>
           </div>
           
           <div className="bg-white border border-[#e4ecf7] rounded-sm p-6 shadow-sm flex flex-col justify-center h-[160px]">
             <p className="text-sm text-[#5a7898] font-medium uppercase tracking-wider mb-2">Lợi nhuận thuần</p>
-            <h3 className="text-3xl font-semibold text-[#0d1f3c] tracking-tight">1.25B ₫</h3>
+            <h3 className="text-3xl font-semibold text-[#0d1f3c] tracking-tight">11.376.000 ₫</h3>
           </div>
         </div>
       </div>

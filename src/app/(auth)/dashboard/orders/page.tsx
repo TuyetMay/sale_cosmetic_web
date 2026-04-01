@@ -38,12 +38,11 @@ const STATUS_CONFIG: Record<OrderStatus, { label: string; dot: string; pillCls: 
 
 
 export default function AdminOrdersPage() {
-  const [filter, setFilter] = useState<'all' | OrderStatus>('all');
+  const [filter] = useState<'all' | OrderStatus>('all');
   const [orders] = useState<Order[]>(MOCK_ORDERS);
   const [searchQuery, setSearchQuery] = useState('');
-  const [view, setView] = useState<'table' | 'form'>('table');
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<Order>({
+  const [view, ] = useState<'table' | 'form'>('table');
+  const [formData] = useState<Order>({
     MaDH: '',
     MaTK: '',
     NgayDatHang: '',
@@ -54,20 +53,6 @@ export default function AdminOrdersPage() {
     SanPhamItems: [],
   });
 
-  const handleAddNew = () => {
-    setEditingId(null);
-    setFormData({
-      MaDH: '',
-      MaTK: '',
-      NgayDatHang: '',
-      DiaChiGiaoHang: '',
-      TrangThaiDonHang: 'Cho xu ly',
-      TongTien: 0,
-      MaNV: 'NV03',
-      SanPhamItems: [],
-    });
-    setView('form');
-  };
 
   const filtered = orders.filter(o => (filter === 'all' || o.TrangThaiDonHang === filter)
     && (searchQuery ? o.MaDH.includes(searchQuery) || o.MaTK.includes(searchQuery) : true));

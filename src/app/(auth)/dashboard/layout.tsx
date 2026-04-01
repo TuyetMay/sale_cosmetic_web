@@ -15,7 +15,7 @@ const MENU_ITEMS = [
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   // Simple protection: only sellers can access dashboard
   if (user && user.role !== 'seller') {
